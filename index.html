@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Fun With SSE</title>
+  </head>
+  <body>
+    <form id="the-form">
+      <input type="text" placeholder="Type A Message" name="message">
+    </form>
+
+    <section id="chat">
+    </section>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", function() {
+        var form = document.querySelector("#the-form"),
+            messageField = form.querySelector("[name=message]"),
+            chat = document.querySelector("#chat")
+        form.addEventListener("submit", function(e) {
+          e.preventDefault()
+          var req = new XMLHttpRequest()
+          req.open("POST", "/messages")
+          req.send(messageField.value)
+          form.reset()
+        })
+
+
+        var eventSource = new EventSource("/events")
+
+        eventSource.addEventListener("message", function(e) {
+          console.log(e.data)
+          var line = document.createElement("div")
+          line.innerText = e.data
+          chat.insertBefore(line)
+        })
+
+      })
+    </script>
+
+  </body>
+</html>
